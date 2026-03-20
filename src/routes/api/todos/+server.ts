@@ -9,7 +9,7 @@ function json(data: any, init: ResponseInit = {}) {
 }
 
 export const GET: RequestHandler = async () => {
-  const todos = readTodos();
+  const todos = await readTodos();
   return json(todos);
 };
 
@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
   const text = String(body.text || '').trim();
   if (!text) return json({ error: 'text required' }, { status: 400 });
 
-  const todos = readTodos();
+  const todos = await readTodos();
   const newTodo: Todo = {
     id: (globalThis.crypto && (globalThis.crypto as any).randomUUID)
       ? (globalThis.crypto as any).randomUUID()
@@ -29,7 +29,7 @@ export const POST: RequestHandler = async ({ request }) => {
   };
 
   todos.unshift(newTodo);
-  writeTodos(todos);
+  await writeTodos(todos);
   return json(newTodo, { status: 201 });
 };
 
@@ -38,14 +38,14 @@ export const PUT: RequestHandler = async ({ request }) => {
   const { id, text, done } = body;
   if (!id) return json({ error: 'id required' }, { status: 400 });
 
-  const todos = readTodos();
+  const todos = await readTodos();
   const idx = todos.findIndex((t) => t.id === id);
   if (idx === -1) return json({ error: 'not found' }, { status: 404 });
 
   if (typeof text === 'string') todos[idx].text = text;
   if (typeof done === 'boolean') todos[idx].done = done;
 
-  writeTodos(todos);
+  await writeTodos(todos);
   return json(todos[idx]);
 };
 
@@ -54,11 +54,11 @@ export const DELETE: RequestHandler = async ({ url, request }) => {
   const id = url.searchParams.get('id') || (await request.json().then((b) => b.id).catch(() => undefined));
   if (!id) return json({ error: 'id required' }, { status: 400 });
 
-  const todos = readTodos();
+  const todos = await readTodos();
   const idx = todos.findIndex((t) => t.id === id);
   if (idx === -1) return json({ error: 'not found' }, { status: 404 });
 
   const removed = todos.splice(idx, 1)[0];
-  writeTodos(todos);
+  await writeTodos(todos);
   return json(removed);
 };
