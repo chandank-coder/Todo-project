@@ -72,8 +72,8 @@
 <main class="app">
 	<section class="card">
 		<header class="card-header">
-			<h1>My Todo List</h1>
-			<p class="muted">Quick, responsive and mobile-friendly</p>
+			<h1>My Task List</h1>
+			<p class="muted">Explore Task Next start</p>
 		</header>
 
 				<form class="input-row" on:submit|preventDefault={add} aria-label="Add todo">
